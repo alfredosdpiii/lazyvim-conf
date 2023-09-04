@@ -31,7 +31,7 @@ return {
   },
   {
     "MeF0504/vim-pets",
-    lazy = true,
+    lazy = false,
     config = function()
       vim.g.pets_default_pet = "cat"
       vim.g.pets_lifetime_enable = 0

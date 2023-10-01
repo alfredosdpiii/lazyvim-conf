@@ -86,12 +86,4 @@ return {
       { "<leader>ha", "<cmd>lua require('harpoon.ui').toggle_quick_menu()<cr>", desc = "Show harpoon marks" },
     },
   },
-  {
-    "altermo/ultimate-autopair.nvim",
-    event = { "InsertEnter", "CmdlineEnter" },
-    branch = "v0.6",
-    opts = {
-      --Config goes here
-    },
-  },
 }

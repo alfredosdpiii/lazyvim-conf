@@ -79,4 +79,23 @@ return {
       { "<leader>ha", "<cmd>lua require('harpoon.ui').toggle_quick_menu()<cr>", desc = "Show harpoon marks" },
     },
   },
+  {
+    "ThePrimeagen/git-worktree.nvim",
+    lazy = false,
+    config = function()
+      require("git-worktree").setup()
+    end,
+    keys = {
+      {
+        "<leader>gt",
+        "<CMD>lua require('telescope').extensions.git_worktree.git_worktrees()<CR>",
+        desc = "Show Worktrees",
+      },
+      {
+        "<leader>gT",
+        "<CMD>lua require('telescope').extensions.git_worktree.create_git_worktree()<CR>",
+        desc = "Add Worktree",
+      },
+    },
+  },
 }

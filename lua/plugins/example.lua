@@ -209,10 +209,29 @@ return {
         "shellcheck",
         "shfmt",
         "flake8",
+        "prettierd",
+        "llm-ls",
       },
     },
   },
 
+  {
+    "williamboman/mason-lspconfig.nvim",
+    opts = {
+      ensure_installed = {
+        "llm_ls", -- Add "llm-ls" to the list of servers to ensure installation
+      },
+      automatic_installation = true,
+    },
+    config = function(_, opts)
+      require("mason-lspconfig").setup(opts)
+
+      local lspconfig = require("lspconfig")
+      lspconfig.llm_ls.setup({
+        -- Additional configuration options for llm-ls if needed
+      })
+    end,
+  },
   -- Use <tab> for completion and snippets (supertab)
   -- first: disable default <tab> and <s-tab> behavior in LuaSnip
   {

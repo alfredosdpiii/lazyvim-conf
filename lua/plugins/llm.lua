@@ -23,9 +23,10 @@ return {
       --   top_p = 0.95,
       -- },
       -- },
-      tokenizer = {
-        repository = "bigcode/starcoder2-15b",
-      },
+      -- tokenizer = {
+      --   repository = "bigcode/starcoder2-15b",
+      -- },
+      tokenizer = nil,
     },
   },
 }

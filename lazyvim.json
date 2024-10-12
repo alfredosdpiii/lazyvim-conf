@@ -1,9 +1,16 @@
 {
   "extras": [
-
+    "lazyvim.plugins.extras.coding.mini-surround",
+    "lazyvim.plugins.extras.coding.yanky",
+    "lazyvim.plugins.extras.dap.core",
+    "lazyvim.plugins.extras.dap.nlua",
+    "lazyvim.plugins.extras.editor.dial",
+    "lazyvim.plugins.extras.editor.inc-rename",
+    "lazyvim.plugins.extras.editor.refactoring",
+    "lazyvim.plugins.extras.test.core"
   ],
   "news": {
-    "NEWS.md": "2123"
+    "NEWS.md": "6520"
   },
-  "version": 3
+  "version": 6
 }

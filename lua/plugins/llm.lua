@@ -1,32 +1,81 @@
 return {
-  {
-    "huggingface/llm.nvim",
-    lazy = false,
-    opts = {
-      enable_suggestions_on_startup = true,
-      enable_suggestions_on_files = "*",
-      debounce_ms = 2000,
-      accept_keymap = "<C-a>",
-      dismiss_keymap = "<C-f>",
-      tls_skip_verify_insecure = false,
-      backend = "ollama", -- backend ID, "huggingface" | "ollama" | "openai" | "tgi"
-      url = "http://localhost:11434/api/generate", -- the http url of the backend
-      tokens_to_clear = { "<|endoftext|>" }, -- tokens to remove from the model's output
-      lsp = {
-        bin_path = vim.api.nvim_call_function("stdpath", { "data" }) .. "/.local/share/nvim/mason/bin/llm-ls",
-      },
-      model = "llama3.2", -- the model ID, behavior depends on backend
-      -- request_body = {
-      -- Modelfile options for the model you use
-      -- options = {
-      --   temperature = 0.2,
-      --   top_p = 0.95,
-      -- },
-      -- },
-      -- tokenizer = {
-      --   repository = "bigcode/starcoder2-15b",
-      -- },
-      tokenizer = nil,
-    },
-  },
+  --   {
+  --     "huggingface/llm.nvim",
+  --     lazy = false,
+  --     opts = {
+  --       enable_suggestions_on_startup = true,
+  --       enable_suggestions_on_files = "*",
+  --       debounce_ms = 2000,
+  --       accept_keymap = "<C-a>",
+  --       dismiss_keymap = "<C-f>",
+  --       tls_skip_verify_insecure = false,
+  --       backend = "ollama", -- backend ID, "huggingface" | "ollama" | "openai" | "tgi"
+  --       url = "http://localhost:11434/api/generate", -- the http url of the backend
+  --       tokens_to_clear = { "<|endoftext|>" }, -- tokens to remove from the model's output
+  --       lsp = {
+  --         bin_path = vim.api.nvim_call_function("stdpath", { "data" }) .. "/.local/share/nvim/mason/bin/llm-ls",
+  --       },
+  --       model = "deepseek-r1:1.5b", -- the model ID, behavior depends on backend
+  --       -- request_body = {
+  --       -- Modelfile options for the model you use
+  --       -- options = {
+  --       --   temperature = 0.2,
+  --       --   top_p = 0.95,
+  --       -- },
+  --       -- },
+  --       -- tokenizer = {
+  --       --   repository = "bigcode/starcoder2-15b",
+  --       -- },
+  --       tokenizer = nil,
+  --     },
+  --   },
+  -- {
+  --   "huggingface/llm.nvim",
+  --   lazy = false,
+  --   opts = {
+  --     backend = "ollama",
+  --     model = "deepseek-chat",
+  --     url = "http://localhost:11434/api/generate", -- the http url of the backend
+  --     accept_keymap = "<C-a>",
+  --     dismiss_keymap = "<C-f>",
+  --     request_body = {
+  --       stop = { "</say>" },
+  --       options = {
+  --         temperature = 0.7,
+  --         top_p = 0.9,
+  --         num_ctx = 4096,
+  --       },
+  --     },
+  --     tokens_to_clear = { "<think>", "</think>", "<say>", "</say>" },
+  --     callbacks = {
+  --       response_post = function(response)
+  --         return response:match("<say>(.-)</say>") or response
+  --       end,
+  --     },
+  --   },
+  -- },
+  -- real
+  -- {
+  --   "huggingface/llm.nvim",
+  --   opts = {
+  --     backend = "ollama",
+  --     model = "deepseek-fim",
+  --     url = "http://localhost:11434/api/generate", -- the http url of the backend
+  --     accept_keymap = "<C-a>",
+  --     dismiss_keymap = "<C-f>",
+  --     request_body = {
+  --       stop = { "</fim_middle>" },
+  --       options = {
+  --         temperature = 0.3,
+  --         num_predict = 128,
+  --       },
+  --     },
+  --     tokens_to_clear = { "<fim_prefix>", "<fim_suffix>", "<fim_middle>", "</fim_middle>" },
+  --     callbacks = {
+  --       response_post = function(response)
+  --         return response:gsub("</?fim_%w+>", "")
+  --       end,
+  --     },
+  --   },
+  -- },
 }

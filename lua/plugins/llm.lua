@@ -1,81 +1,55 @@
 return {
-  --   {
-  --     "huggingface/llm.nvim",
-  --     lazy = false,
-  --     opts = {
-  --       enable_suggestions_on_startup = true,
-  --       enable_suggestions_on_files = "*",
-  --       debounce_ms = 2000,
-  --       accept_keymap = "<C-a>",
-  --       dismiss_keymap = "<C-f>",
-  --       tls_skip_verify_insecure = false,
-  --       backend = "ollama", -- backend ID, "huggingface" | "ollama" | "openai" | "tgi"
-  --       url = "http://localhost:11434/api/generate", -- the http url of the backend
-  --       tokens_to_clear = { "<|endoftext|>" }, -- tokens to remove from the model's output
-  --       lsp = {
-  --         bin_path = vim.api.nvim_call_function("stdpath", { "data" }) .. "/.local/share/nvim/mason/bin/llm-ls",
-  --       },
-  --       model = "deepseek-r1:1.5b", -- the model ID, behavior depends on backend
-  --       -- request_body = {
-  --       -- Modelfile options for the model you use
-  --       -- options = {
-  --       --   temperature = 0.2,
-  --       --   top_p = 0.95,
-  --       -- },
-  --       -- },
-  --       -- tokenizer = {
-  --       --   repository = "bigcode/starcoder2-15b",
-  --       -- },
-  --       tokenizer = nil,
-  --     },
-  --   },
-  -- {
-  --   "huggingface/llm.nvim",
-  --   lazy = false,
-  --   opts = {
-  --     backend = "ollama",
-  --     model = "deepseek-chat",
-  --     url = "http://localhost:11434/api/generate", -- the http url of the backend
-  --     accept_keymap = "<C-a>",
-  --     dismiss_keymap = "<C-f>",
-  --     request_body = {
-  --       stop = { "</say>" },
-  --       options = {
-  --         temperature = 0.7,
-  --         top_p = 0.9,
-  --         num_ctx = 4096,
-  --       },
-  --     },
-  --     tokens_to_clear = { "<think>", "</think>", "<say>", "</say>" },
-  --     callbacks = {
-  --       response_post = function(response)
-  --         return response:match("<say>(.-)</say>") or response
-  --       end,
-  --     },
-  --   },
-  -- },
-  -- real
-  -- {
-  --   "huggingface/llm.nvim",
-  --   opts = {
-  --     backend = "ollama",
-  --     model = "deepseek-fim",
-  --     url = "http://localhost:11434/api/generate", -- the http url of the backend
-  --     accept_keymap = "<C-a>",
-  --     dismiss_keymap = "<C-f>",
-  --     request_body = {
-  --       stop = { "</fim_middle>" },
-  --       options = {
-  --         temperature = 0.3,
-  --         num_predict = 128,
-  --       },
-  --     },
-  --     tokens_to_clear = { "<fim_prefix>", "<fim_suffix>", "<fim_middle>", "</fim_middle>" },
-  --     callbacks = {
-  --       response_post = function(response)
-  --         return response:gsub("</?fim_%w+>", "")
-  --       end,
-  --     },
-  --   },
-  -- },
+  {
+    "huggingface/llm.nvim",
+    lazy = false,
+    priority = 1000,
+    opts = {
+      backend = "ollama",
+      model = "deepseek-r1:1.5b",
+      url = "http://localhost:11434/api/generate",
+      accept_keymap = "<C-a>",
+      lsp = {
+        bin_path = vim.api.nvim_call_function("stdpath", { "data" }) .. "/.local/share/nvim/mason/bin/llm-ls",
+      },
+      dismiss_keymap = "<C-n>",
+      request_body = {
+        stop = { "\n```", "</code>", "</think>" }, -- Stop tokens for code and thinking blocks
+        options = {
+          temperature = 0.2, -- Slightly higher for better reasoning
+          top_p = 0.3, -- More focused selection
+          top_k = 30, -- Tighter token choices
+          num_ctx = 4096, -- Larger context for reasoning
+          repeat_penalty = 1.2, -- Stronger repetition prevention
+          seed = 42, -- Keep responses consistent
+        },
+      },
+      tokens_to_clear = {
+        "Let me analyze", -- Remove common prefixes
+        "I'm thinking about",
+        "Let's examine",
+        "Based on the",
+        "Looking at",
+        "<think>", -- Remove thinking markers
+        "</think>",
+        "<code>", -- Remove code markers
+        "</code>",
+        "\n```",
+      },
+      callbacks = {
+        response_post = function(response)
+          -- Enhanced response cleaning
+          response = response:gsub("^%s+", "") -- Leading whitespace
+          response = response:gsub("%s+$", "") -- Trailing whitespace
+          response = response:gsub("```%w*\n?", "") -- Code fences
+          response = response:gsub("<think>.*</think>", "") -- Remove thinking blocks
+          response = response:gsub("%s*\n%s*\n%s*\n", "\n\n") -- Excess newlines
+          return response
+        end,
+        error = function(err)
+          vim.notify(err, vim.log.levels.ERROR)
+          return nil
+        end,
+      },
+    },
+  },
 }

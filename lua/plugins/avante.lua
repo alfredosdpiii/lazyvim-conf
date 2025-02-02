@@ -20,7 +20,20 @@ return {
           __inherited_from = "openai",
           api_key_name = "",
           endpoint = "http://127.0.0.1:11434/v1",
-          model = "deepseek-r1:7b",
+          model = "deepseek-r1:8b",
+        },
+        groq = {
+          __inherited_from = "openai",
+          api_key_name = "GROQ_API_KEY",
+          endpoint = "https://api.groq.com/openai/v1",
+          model = "deepseek-r1-distill-llama-70b",
+          max_tokens = 6000,
+        },
+        perplexity = {
+          __inherited_from = "openai",
+          api_key_name = "PERPLEXITY_API_KEY",
+          endpoint = "https://api.perplexity.ai",
+          model = "sonar-reasoning",
         },
         -- perplexity = {
         --   __inherited_from = "openai",
@@ -48,17 +61,83 @@ return {
 
       dual_boost = {
         enabled = true, -- turn on the dual-boost
-        first_provider = "ollama", -- the first reference output
-        second_provider = "claude", -- the second reference output
+        first_provider = "perplexity", -- the first reference output
+        second_provider = "ollama", -- the second reference output
         prompt = [[
-Based on the two reference outputs below, generate a response that incorporates
-elements from both but reflects your own judgment and unique perspective.
-Do not provide any explanation, just give the response directly.
+        You are an expert developer combining Perplexity's search with Ollama's reasoning. Your task is to create production-ready solutions.
 
-Reference Output 1: [{{provider1_output}}],
-Reference Output 2: [{{provider2_output}}]
+SEARCH INTEGRATION (Perplexity):
+Use search results for authoritative information:
+• Current documentation & APIs
+• Version compatibility
+• Community solutions
+• Known issues & fixes
+• Security advisories
+• Performance patterns
+
+CODE ANALYSIS (Ollama):
+Apply reasoning for implementation:
+• Code structure & patterns
+• Error handling strategy
+• Security measures
+• Performance optimization
+• Edge case handling
+• Testing approach
+
+SOLUTION PROCESS:
+<think>
+1. Analyze Requirements:
+   - Understand the problem scope
+   - Identify key constraints
+   - List technical requirements
+
+2. Evaluate Options:
+   - Compare possible approaches
+   - Consider trade-offs
+   - Choose optimal solution
+
+3. Implementation Plan:
+   - Define steps
+   - Note potential risks
+   - Plan validation strategy
+</think>
+
+RESPONSE FORMAT:
+
+1. Quick Implementation:
+   • Working solution
+   • Key requirements
+   • Basic usage
+   [Include source/version]
+
+2. Full Solution:
+   • Complete code
+   • Error handling
+   • Tests
+   • Security measures
+   • Performance notes
+   [Include references]
+
+3. Context:
+   • Pitfalls to avoid
+   • Alternative options
+   • Maintenance notes
+   • Scaling considerations
+
+RULES:
+• Trust search for facts
+• Use reasoning for implementation
+• Include working code
+• Add relevant citations
+• Explain key decisions
+• Focus on maintainability
+• Consider security first
+
+Reference Output 1 (Perplexity Search): [{{provider1_output}}]
+Reference Output 2 (Ollama Reasoning): [{{provider2_output}}]
+
+Provide direct, implementation-focused solutions.
         ]],
-        timeout = 80000, -- in milliseconds
       },
       -- You can also override other Avante options (mappings, windows, highlights, etc.)
       -- ...

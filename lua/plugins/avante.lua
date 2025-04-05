@@ -5,7 +5,7 @@ return {
     lazy = false,
     version = "*", -- Or 'false' to track the latest commit
     opts = {
-      provider = "claude",
+      provider = "openrouter",
       auto_suggestions_provider = "ollama",
       vendors = {
         -- Example: "deepseek" inherits the same structure as openai
@@ -15,6 +15,12 @@ return {
           endpoint = "https://api.deepseek.com",
           model = "deepseek-reasoner",
           -- Additional fields if needed
+        },
+        openrouter = {
+          __inherited_from = "openai",
+          api_key_name = "OPENROUTER_API_KEY",
+          endpoint = "https://openrouter.ai/api/v1",
+          model = "openrouter/quasar-alpha",
         },
         ollama = {
           __inherited_from = "openai",
@@ -60,7 +66,7 @@ return {
       },
 
       dual_boost = {
-        enabled = true, -- turn on the dual-boost
+        enabled = false, -- turn on the dual-boost
         first_provider = "perplexity", -- the first reference output
         second_provider = "ollama", -- the second reference output
         prompt = [[

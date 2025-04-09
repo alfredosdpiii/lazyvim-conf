@@ -3,18 +3,46 @@ return {
     "yetone/avante.nvim",
     event = "VeryLazy",
     lazy = false,
-    version = "*", -- Or 'false' to track the latest commit
+    version = false, -- Never set this value to "*"! Never!
     opts = {
-      provider = "openrouter",
+      provider = "ollama",
       auto_suggestions_provider = "ollama",
+      cursor_applying_provider = "openrouter", -- Use Groq for applying in cursor planning mode
+
+      -- Move ollama out of vendors to be a top-level config as recommended
+      ollama = {
+        endpoint = "http://127.0.0.1:11434", -- Note: no /v1 at the end
+        model = "deepseek-r1:8b",
+        timeout = 30000,
+      },
+
+      -- Add RAG service configuration
+      rag_service = {
+        enabled = false, -- Set to true to enable RAG service
+        host_mount = os.getenv("HOME"), -- Host mount path for the rag service
+        provider = "openai", -- The provider to use for RAG service (e.g. openai or ollama)
+        llm_model = "", -- The LLM model to use for RAG service
+        embed_model = "", -- The embedding model to use for RAG service
+        endpoint = "https://api.openai.com/v1", -- The API endpoint for RAG service
+      },
+
+      -- Enable cursor planning mode for better results with open-source models
+      behaviour = {
+        enable_cursor_planning_mode = true,
+        auto_set_highlight_group = true,
+        auto_set_keymaps = true,
+        auto_apply_diff_after_generation = false,
+        support_paste_from_clipboard = false,
+        minimize_diff = true,
+        enable_token_counting = true,
+      },
+
       vendors = {
-        -- Example: "deepseek" inherits the same structure as openai
         deepseek = {
           __inherited_from = "openai", -- Use openai-like logic
-          api_key_name = "DEEPSEEK_API_KEY", -- so Avante knows which env var to prompt for
+          api_key_name = "DEEPSEEK_API_KEY",
           endpoint = "https://api.deepseek.com",
           model = "deepseek-reasoner",
-          -- Additional fields if needed
         },
         openrouter = {
           __inherited_from = "openai",
@@ -22,18 +50,12 @@ return {
           endpoint = "https://openrouter.ai/api/v1",
           model = "openrouter/quasar-alpha",
         },
-        ollama = {
-          __inherited_from = "openai",
-          api_key_name = "",
-          endpoint = "http://127.0.0.1:11434/v1",
-          model = "deepseek-r1:8b",
-        },
         groq = {
           __inherited_from = "openai",
           api_key_name = "GROQ_API_KEY",
           endpoint = "https://api.groq.com/openai/v1",
-          model = "deepseek-r1-distill-llama-70b",
-          max_tokens = 6000,
+          model = "llama-3.3-70b-versatile", -- Updated to recommended model for cursor planning
+          max_completion_tokens = 32768, -- Increased as recommended for cursor planning mode
         },
         perplexity = {
           __inherited_from = "openai",
@@ -41,34 +63,12 @@ return {
           endpoint = "https://api.perplexity.ai",
           model = "sonar-reasoning",
         },
-        -- perplexity = {
-        --   __inherited_from = "openai",
-        --   api_key_name = "PERPLEXITY_API_KEY",
-        --   endpoint = "https://api.perplexity.ai",
-        --   model = "pplx-7b-online",  -- or "pplx-70b-online", "pplx-7b-chat", "pplx-70b-chat"
-        -- },
-        -- Add an openai vendor if you want to switch to or use with dual-boost
-        -- openai = {
-        --   endpoint = "https://api.openai.com",
-        --   api_key_name = "OPENAI_API_KEY",
-        --   model = "gpt-3.5-turbo-0613",
-        --   temperature = 0,
-        --   max_tokens = 2000,
-        -- },
-        -- claude = {
-        --   endpoint = "https://api.anthropic.com",
-        --   model = "claude-3-5-sonnet-20241022",
-        --   temperature = 0.7,
-        --   max_tokens = 4096,
-        -- },
-        -- You can add more providers or variants as needed:
-        --   azure = {...}   or   claude = {...}, etc.
       },
 
       dual_boost = {
-        enabled = false, -- turn on the dual-boost
-        first_provider = "perplexity", -- the first reference output
-        second_provider = "ollama", -- the second reference output
+        enabled = false,
+        first_provider = "perplexity",
+        second_provider = "ollama",
         prompt = [[
         You are an expert developer combining Perplexity's search with Ollama's reasoning. Your task is to create production-ready solutions.
 
@@ -145,8 +145,6 @@ Reference Output 2 (Ollama Reasoning): [{{provider2_output}}]
 Provide direct, implementation-focused solutions.
         ]],
       },
-      -- You can also override other Avante options (mappings, windows, highlights, etc.)
-      -- ...
     },
     build = "make",
     dependencies = {

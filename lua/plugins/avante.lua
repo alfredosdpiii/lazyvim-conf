@@ -5,8 +5,8 @@ return {
     lazy = false,
     version = false, -- Never set this value to "*"! Never!
     opts = {
-      provider = "ollama",
-      auto_suggestions_provider = "ollama",
+      provider = "openrouter",
+      auto_suggestions_provider = "openrouter",
       cursor_applying_provider = "openrouter", -- Use Groq for applying in cursor planning mode
 
       -- Move ollama out of vendors to be a top-level config as recommended
@@ -19,9 +19,9 @@ return {
       rag_service = {
         enabled = true, -- Set to true to enable RAG service
         host_mount = os.getenv("HOME"), -- Host mount path for the rag service
-        provider = "ollama", -- The provider to use for RAG service (e.g. openai or ollama)
-        llm_model = "", -- The LLM model to use for RAG service
-        embed_model = "", -- The embedding model to use for RAG service
+        provider = "openai", -- The provider to use for RAG service (e.g. openai or ollama)
+        llm_model = "gpt-4o-mini", -- The LLM model to use for RAG service
+        embed_model = "text-embedding-3-large", -- The embedding model to use for RAG service
         endpoint = "https://api.openai.com/v1", -- The API endpoint for RAG service
       },
 
@@ -34,6 +34,11 @@ return {
         support_paste_from_clipboard = false,
         minimize_diff = true,
         enable_token_counting = true,
+      },
+
+      web_search_engine = {
+        provider = "tavily", -- tavily, serpapi, searchapi, google, kagi, brave, or searxng
+        proxy = nil, -- proxy support, e.g., http://127.0.0.1:7890
       },
 
       vendors = {

@@ -12,15 +12,15 @@ return {
       -- Move ollama out of vendors to be a top-level config as recommended
       ollama = {
         endpoint = "http://127.0.0.1:11434", -- Note: no /v1 at the end
-        model = "deepseek-r1:8b",
+        model = "deepcoder",
         timeout = 30000,
       },
 
       -- Add RAG service configuration
       rag_service = {
-        enabled = false, -- Set to true to enable RAG service
+        enabled = true, -- Set to true to enable RAG service
         host_mount = os.getenv("HOME"), -- Host mount path for the rag service
-        provider = "openai", -- The provider to use for RAG service (e.g. openai or ollama)
+        provider = "ollama", -- The provider to use for RAG service (e.g. openai or ollama)
         llm_model = "", -- The LLM model to use for RAG service
         embed_model = "", -- The embedding model to use for RAG service
         endpoint = "https://api.openai.com/v1", -- The API endpoint for RAG service

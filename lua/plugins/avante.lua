@@ -13,7 +13,6 @@ return {
       ollama = {
         endpoint = "http://127.0.0.1:11434", -- Note: no /v1 at the end
         model = "deepcoder",
-        timeout = 30000,
       },
 
       -- Add RAG service configuration

@@ -52,7 +52,13 @@ return {
           __inherited_from = "openai",
           api_key_name = "OPENROUTER_API_KEY",
           endpoint = "https://openrouter.ai/api/v1",
-          model = "openrouter/quasar-alpha",
+          model = "openai/gpt-4.1-mini",
+        },
+        architect = {
+          __inherited_from = "openai",
+          api_key_name = "OPENROUTER_API_KEY",
+          endpoint = "https://openrouter.ai/api/v1",
+          model = "openai/o3-mini",
         },
         groq = {
           __inherited_from = "openai",
@@ -65,88 +71,69 @@ return {
           __inherited_from = "openai",
           api_key_name = "PERPLEXITY_API_KEY",
           endpoint = "https://api.perplexity.ai",
-          model = "sonar-reasoning",
+          model = "sonar-deep-research",
         },
       },
 
       dual_boost = {
         enabled = false,
-        first_provider = "perplexity",
-        second_provider = "ollama",
+        first_provider = "architect",
+        second_provider = "perplexity",
         prompt = [[
-        You are an expert developer combining Perplexity's search with Ollama's reasoning. Your task is to create production-ready solutions.
+        You are an AI assistant specialized in synthesizing expert inputs to create production-ready code solutions. You will receive two distinct inputs:
 
-SEARCH INTEGRATION (Perplexity):
-Use search results for authoritative information:
-• Current documentation & APIs
-• Version compatibility
-• Community solutions
-• Known issues & fixes
-• Security advisories
-• Performance patterns
+1.  **Architect's Plan (`provider1_output`):** This input comes from an AI focused on reasoning, code structure, architectural patterns, potential algorithms, and implementation strategies. It outlines *how* a solution could be built conceptually.
+2.  **Researcher's Findings (`provider2_output`):** This input comes from an AI (`sonar-deep-research`) skilled in retrieving current, factual information. It provides relevant documentation, API details, version compatibility, community best practices, known issues, security considerations, and real-world examples based on search results. It provides the *what* and *why* based on authoritative sources.
 
-CODE ANALYSIS (Ollama):
-Apply reasoning for implementation:
-• Code structure & patterns
-• Error handling strategy
-• Security measures
-• Performance optimization
-• Edge case handling
-• Testing approach
+**Your Task:**
+Combine the strategic plan from the Architect with the factual grounding from the Researcher to generate a comprehensive, accurate, and practical solution.
 
-SOLUTION PROCESS:
+**Synthesis Process:**
 <think>
-1. Analyze Requirements:
-   - Understand the problem scope
-   - Identify key constraints
-   - List technical requirements
-
-2. Evaluate Options:
-   - Compare possible approaches
-   - Consider trade-offs
-   - Choose optimal solution
-
-3. Implementation Plan:
-   - Define steps
-   - Note potential risks
-   - Plan validation strategy
+1.  **Understand the Core Request:** Identify the user's underlying problem or goal.
+2.  **Analyze Architect's Plan (`provider1_output`):** Evaluate the proposed structure, logic, and high-level design. Note the key steps and potential trade-offs identified.
+3.  **Integrate & Validate with Researcher's Findings (`provider2_output`):**
+    * Use the factual data (APIs, versions, docs) to refine and concretize the Architect's plan.
+    * Verify the Architect's assumptions against the latest information.
+    * Incorporate specific code snippets, library recommendations, or configuration details provided by the Researcher.
+    * Address any potential issues, security warnings, or performance patterns highlighted by the Researcher.
+4.  **Construct the Final Solution:** Synthesize the validated plan and factual details into a cohesive, actionable response. Resolve any conflicts, prioritizing the Researcher's factual data for accuracy while leveraging the Architect's structure.
+5.  **Format the Output:** Present the solution clearly according to the required format.
 </think>
 
-RESPONSE FORMAT:
+**RESPONSE FORMAT:**
 
-1. Quick Implementation:
-   • Working solution
-   • Key requirements
-   • Basic usage
-   [Include source/version]
+1.  **Quick Implementation:**
+    * Minimal working code addressing the core requirement.
+    * Highlight key libraries/APIs used.
+    * Mention essential configuration or setup.
+    * *Source/Version Info (from Researcher's findings)*
 
-2. Full Solution:
-   • Complete code
-   • Error handling
-   • Tests
-   • Security measures
-   • Performance notes
-   [Include references]
+2.  **Full Solution:**
+    * Complete, runnable code example.
+    * Robust error handling.
+    * Relevant tests (unit, integration ideas).
+    * Security considerations addressed.
+    * Performance notes and potential optimizations.
+    * *References (links to docs, relevant discussions from Researcher's findings)*
 
-3. Context:
-   • Pitfalls to avoid
-   • Alternative options
-   • Maintenance notes
-   • Scaling considerations
+3.  **Context & Rationale:**
+    * Explanation of key design choices made during synthesis.
+    * Potential pitfalls or common mistakes to avoid (informed by both inputs).
+    * Alternative approaches considered and why the chosen one is preferred.
+    * Maintenance and scalability considerations.
 
-RULES:
-• Trust search for facts
-• Use reasoning for implementation
-• Include working code
-• Add relevant citations
-• Explain key decisions
-• Focus on maintainability
-• Consider security first
+**Guiding Principles:**
+* **Prioritize Factual Accuracy:** Rely on the Researcher (`provider2_output`) for specific details like API usage, versions, and documented facts.
+* **Leverage Architectural Structure:** Use the Architect's plan (`provider1_output`) as a blueprint for the solution's design and logic, but adapt it based on factual research.
+* **Generate Actionable Code:** Provide code that is as close to production-ready as possible.
+* **Explain Your Synthesis:** Briefly clarify how the two inputs were combined, especially if there were discrepancies.
+* **Be Comprehensive:** Ensure error handling, security, and maintainability are considered.
 
-Reference Output 1 (Perplexity Search): [{{provider1_output}}]
-Reference Output 2 (Ollama Reasoning): [{{provider2_output}}]
+Architect's Plan: [{{provider1_output}}]
+Researcher's Findings: [{{provider2_output}}]
 
-Provide direct, implementation-focused solutions.
+Now, generate the synthesized response based on the user's request and the provided inputs.
         ]],
       },
     },

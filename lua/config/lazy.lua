@@ -15,7 +15,7 @@ require("lazy").setup({
     -- All default LazyVim extras commented out for testing
     -- { import = "lazyvim.plugins.extras.coding.copilot-chat" },
     -- { import = "lazyvim.plugins.extras.coding.mini-comment" },
-    -- { import = "lazyvim.plugins.extras.dap.core" },
+    { import = "lazyvim.plugins.extras.dap.core" },
     -- { import = "lazyvim.plugins.extras.editor.aerial" },
     -- { import = "lazyvim.plugins.extras.editor.navic" },
     -- { import = "lazyvim.plugins.extras.formatting.prettier" },
@@ -24,7 +24,7 @@ require("lazy").setup({
     -- { import = "lazyvim.plugins.extras.lang.typescript" },
     -- { import = "lazyvim.plugins.extras.lang.json" },
     -- { import = "lazyvim.plugins.extras.ui.mini-animate" },
-    -- { import = "lazyvim.plugins.extras.lang.tailwind" },
+    { import = "lazyvim.plugins.extras.lang.tailwind" },
 
     -- Keep essential dependencies for ai_assistant
     { "nvim-lua/plenary.nvim" },

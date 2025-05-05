@@ -1,7 +1,7 @@
 -- This file is automatically loaded by plugins.core
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
-
+vim.g.lazyvim_blink_main = false
 local opt = vim.opt
 
 opt.autowrite = true -- Enable auto write

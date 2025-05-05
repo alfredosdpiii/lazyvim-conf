@@ -30,13 +30,14 @@ return {
   {
     "olimorris/codecompanion.nvim",
     config = function()
-      local default_model = "google/gemini-2.0-flash-001"
+      local default_model = "x-ai/grok-3-mini-beta"
       local available_models = {
-        "google/gemini-2.0-flash-001",
-        "google/gemini-2.5-pro-preview-03-25",
+        "google/gemini-2.5-flash-preview",
+        "google/gemini-2.5-flash-preview-thinking",
+        "google/gemini-2.5-pro-exp-03-25",
         "anthropic/claude-3.7-sonnet",
         "anthropic/claude-3.5-sonnet",
-        "openai/gpt-4o-mini",
+        "openai/o4-mini-high",
       }
       local current_model = default_model
 
@@ -94,10 +95,10 @@ return {
       })
 
       vim.keymap.set({ "n", "v" }, "<leader>ck", "<cmd>CodeCompanionActions<cr>", { noremap = true, silent = true })
-      vim.keymap.set({ "n", "v" }, "<leader>a", "<cmd>CodeCompanionChat Toggle<cr>", { noremap = true, silent = true })
+      vim.keymap.set({ "n", "v" }, "<leader>ct", "<cmd>CodeCompanionChat Toggle<cr>", { noremap = true, silent = true })
       vim.keymap.set("v", "ga", "<cmd>CodeCompanionChat Add<cr>", { noremap = true, silent = true })
 
-      vim.keymap.set("n", "<leader>cs", select_model, { desc = "Select Gemini Model" })
+      vim.keymap.set("n", "<leader>cm", select_model, { desc = "Select Gemini Model" })
       -- Expand 'cc' into 'CodeCompanion' in the command line
       vim.cmd([[cab cc CodeCompanion]])
     end,

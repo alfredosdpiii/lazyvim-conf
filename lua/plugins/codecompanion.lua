@@ -1,98 +1,110 @@
+-- lua/plugins/code_ai.lua
 return {
+
+  -- 🧠 MCPHub ---------------------------------------------------------
   {
-    "olimorris/codecompanion.nvim",
-    lazy = false, -- Ensure plugin loads immediately
-    priority = 50, -- Load early in the startup sequence
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-treesitter/nvim-treesitter",
-      "hrsh7th/nvim-cmp",
-      "nvim-telescope/telescope.nvim",
-      { "stevearc/dressing.nvim", opts = {} },
-    },
+    "ravitemer/mcphub.nvim",
+    lazy = false, -- ensure runtimepath
+    build = "npm install -g mcp-hub@latest",
     config = function()
-      require("codecompanion").setup({
-        adapters = {
-          ollama = function()
-            return require("codecompanion.adapters").extend("ollama", {
-              schema = {
-                model = {
-                  default = "deepseek-r1:7b", -- More reliable for code tasks
-                  fallback = "deepseek-r1:7b",
-                },
-                options = {
-                  temperature = 0.1, -- More deterministic responses
-                  top_p = 0.8, -- Focus on higher probability tokens
-                  num_ctx = 4096, -- Standard context size
-                  repeat_penalty = 1.2, -- Stronger repetition prevention
-                },
-              },
-              url = "http://localhost:11434/api/generate",
-            })
-          end,
-        },
-        strategies = {
-          chat = {
-            adapter = "ollama",
-            auto_focus = true,
-            auto_follow = true,
-            show_language = true,
-            error_handler = function(err)
-              vim.notify(err, vim.log.levels.ERROR)
-            end,
-            language_detection = true, -- Auto-detect file language
-            max_lines = 1000, -- Prevent excessive output
-            trim_response = true, -- Remove redundant whitespace
-            save_context = true, -- Remember chat context
+      require("mcphub").setup({
+        extensions = {
+          codecompanion = {
+            show_result_in_chat = true,
+            make_vars = true,
+            make_slash_commands = true,
           },
-          inline = {
-            adapter = "ollama",
-            show_provider = true,
-            clear_on_done = false, -- Keep suggestions visible
-          },
-          agent = {
-            adapter = "ollama",
-            commands = {
-              explain = "Explain how this code works, including edge cases and assumptions",
-              improve = "Suggest improvements focusing on performance, readability, and maintainability",
-              fix = "Find and fix issues, including potential security vulnerabilities",
-              test = "Generate comprehensive unit tests with edge cases",
-              doc = "Generate documentation following language-specific conventions",
-              refactor = "Suggest refactoring options prioritizing code reusability",
-              security = "Perform security analysis and suggest hardening measures",
-              perf = "Analyze performance implications and suggest optimizations",
-              types = "Suggest type annotations and interface improvements",
-            },
-          },
-        },
-        window = {
-          layout = "float",
-          width = 0.55, -- Wider for better code visibility
-          height = 0.7, -- Taller for context
-          border = "rounded",
-          win_opts = {
-            wrap = false, -- Better for code
-            number = true, -- Line numbers
-            foldcolumn = "0", -- Save space
-            cursorline = true, -- Easier navigation
-          },
-          position = "bottom-right", -- Consistent positioning
-        },
-        highlight = {
-          enable = true,
-          timeout = 1000,
         },
       })
     end,
-    keys = {
-      { "<leader>cc", "<cmd>CodeCompanionChat<cr>", desc = "Open Chat" },
-      { "<leader>ce", "<cmd>CodeCompanionChat explain<cr>", mode = { "n", "v" }, desc = "Explain Code" },
-      { "<leader>ci", "<cmd>CodeCompanionChat improve<cr>", mode = { "n", "v" }, desc = "Improve Code" },
-      { "<leader>ct", "<cmd>CodeCompanionChat test<cr>", mode = { "n", "v" }, desc = "Generate Tests" },
-      { "<leader>cd", "<cmd>CodeCompanionChat doc<cr>", mode = { "n", "v" }, desc = "Generate Docs" },
-      { "<leader>cf", "<cmd>CodeCompanionToggle<cr>", desc = "Toggle Window" },
-      { "<leader>ca", "<cmd>CodeCompanionActions<cr>", mode = { "n", "v" }, desc = "Show Actions" },
-      { "ga", "<cmd>CodeCompanionChat Add<cr>", mode = "v", desc = "Add to Chat" },
+  },
+  {
+    "Davidyz/VectorCode",
+    version = "*", -- optional, depending on whether you're on nightly or release
+    build = "uv pip install --system vectorcode", -- optional but recommended. This keeps your CLI up-to-date.
+    dependencies = { "nvim-lua/plenary.nvim" },
+  },
+
+  -- 💬 CodeCompanion --------------------------------------------------
+  --
+  {
+    "olimorris/codecompanion.nvim",
+    config = function()
+      local default_model = "google/gemini-2.0-flash-001"
+      local available_models = {
+        "google/gemini-2.0-flash-001",
+        "google/gemini-2.5-pro-preview-03-25",
+        "anthropic/claude-3.7-sonnet",
+        "anthropic/claude-3.5-sonnet",
+        "openai/gpt-4o-mini",
+      }
+      local current_model = default_model
+
+      local function select_model()
+        vim.ui.select(available_models, {
+          prompt = "Select  Model:",
+        }, function(choice)
+          if choice then
+            current_model = choice
+            vim.notify("Selected model: " .. current_model)
+          end
+        end)
+      end
+
+      require("codecompanion").setup({
+        strategies = {
+          chat = {
+            adapter = "openrouter",
+          },
+          inline = {
+            adapter = "openrouter",
+          },
+        },
+        adapters = {
+          openrouter = function()
+            return require("codecompanion.adapters").extend("openai_compatible", {
+              env = {
+                url = "https://openrouter.ai/api",
+                api_key = "OPENROUTER_API_KEY",
+                chat_url = "/v1/chat/completions",
+              },
+              schema = {
+                model = {
+                  default = current_model,
+                },
+              },
+            })
+          end,
+        },
+        extensions = {
+          mcphub = {
+            callback = "mcphub.extensions.codecompanion",
+            opts = {
+              show_result_in_chat = true, -- Show mcp tool results in chat
+              make_vars = true, -- Convert resources to #variables
+              make_slash_commands = true, -- Add prompts as /slash commands
+            },
+          },
+          vectorcode = {
+            opts = {
+              add_tool = true,
+            },
+          },
+        },
+      })
+
+      vim.keymap.set({ "n", "v" }, "<leader>ck", "<cmd>CodeCompanionActions<cr>", { noremap = true, silent = true })
+      vim.keymap.set({ "n", "v" }, "<leader>a", "<cmd>CodeCompanionChat Toggle<cr>", { noremap = true, silent = true })
+      vim.keymap.set("v", "ga", "<cmd>CodeCompanionChat Add<cr>", { noremap = true, silent = true })
+
+      vim.keymap.set("n", "<leader>cs", select_model, { desc = "Select Gemini Model" })
+      -- Expand 'cc' into 'CodeCompanion' in the command line
+      vim.cmd([[cab cc CodeCompanion]])
+    end,
+
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
     },
   },
 }

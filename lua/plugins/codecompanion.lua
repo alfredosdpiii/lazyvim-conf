@@ -34,10 +34,11 @@ return {
       local available_models = {
         "google/gemini-2.5-flash-preview",
         "google/gemini-2.5-flash-preview-thinking",
-        "google/gemini-2.5-pro-exp-03-25",
+        "google/gemini-2.5-pro",
         "anthropic/claude-3.7-sonnet",
         "anthropic/claude-3.5-sonnet",
         "openai/o4-mini-high",
+        "x-ai/grok-3-mini-beta",
       }
       local current_model = default_model
 
@@ -98,7 +99,7 @@ return {
       vim.keymap.set({ "n", "v" }, "<leader>ct", "<cmd>CodeCompanionChat Toggle<cr>", { noremap = true, silent = true })
       vim.keymap.set("v", "ga", "<cmd>CodeCompanionChat Add<cr>", { noremap = true, silent = true })
 
-      vim.keymap.set("n", "<leader>cm", select_model, { desc = "Select Gemini Model" })
+      vim.keymap.set("n", "<leader>cp", select_model, { desc = "Select Gemini Model" })
       -- Expand 'cc' into 'CodeCompanion' in the command line
       vim.cmd([[cab cc CodeCompanion]])
     end,

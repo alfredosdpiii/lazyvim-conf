@@ -1,16 +1,19 @@
 return {
-  { "iruzo/matrix-nvim" },
+  -- { "iruzo/matrix-nvim" },
   {
     "mcchrish/zenbones.nvim",
     dependencies = {
       "rktjmp/lush.nvim",
     },
   },
-
+  { "ellisonleao/gruvbox.nvim" },
+  { "slugbyte/lackluster.nvim" },
+  { "wnkz/monoglow.nvim" },
   {
     "LazyVim/LazyVim",
-    -- opts = {
-    --   colorscheme = "myscheme",
-    -- },
+    opts = {
+      -- colorscheme = "lackluster-hack",
+      colorscheme = "gruvbox",
+    },
   },
 }

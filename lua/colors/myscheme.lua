@@ -1,49 +1,31 @@
--- local colors_name = "gruvbones"
+-- local colors_name = "matrixscheme"
 -- vim.g.colors_name = colors_name -- Required when defining a colorscheme
 --
 -- local lush = require("lush")
 -- local hsluv = lush.hsluv -- Human-friendly hsl
 -- local util = require("zenbones.util")
 --
--- local bg = vim.o.background
---
--- -- Define a palette. Use `palette_extend` to fill unspecified colors
--- -- Based on https://github.com/gruvbox-community/gruvbox#palette
--- local palette
--- if bg == "light" then
---   palette = util.palette_extend({
---     bg = hsluv("#fbf1c7"),
---     fg = hsluv("#3c3836"),
---     rose = hsluv("#9d0006"),
---     leaf = hsluv("#79740e"),
---     wood = hsluv("#b57614"),
---     water = hsluv("#076678"),
---     blossom = hsluv("#8f3f71"),
---     sky = hsluv("#427b58"),
---   }, bg)
--- else
---   palette = util.palette_extend({
---     bg = hsluv("#282828"),
---     fg = hsluv("#ebdbb2"),
---     rose = hsluv("#fb4934"),
---     leaf = hsluv("#b8bb26"),
---     wood = hsluv("#fabd2f"),
---     water = hsluv("#83a598"),
---     blossom = hsluv("#d3869b"),
---     sky = hsluv("#83c07c"),
---   }, bg)
--- end
+-- local palette = util.palette_extend({
+--   bg = hsluv("#000000"), -- Black background
+--   fg = hsluv("#00FF00"), -- Green foreground
+-- }, "dark")
 --
 -- -- Generate the lush specs using the generator util
 -- local generator = require("zenbones.specs")
--- local base_specs = generator.generate(palette, bg, generator.get_global_config(colors_name, bg))
+-- local base_specs = generator.generate(palette, "dark", generator.get_global_config(colors_name, "dark"))
 --
 -- -- Optionally extend specs using Lush
 -- local specs = lush.extends({ base_specs }).with(function()
 --   return {
---     Statement({ base_specs.Statement, fg = palette.rose }),
---     Special({ fg = palette.water }),
---     Type({ fg = palette.sky, gui = "italic" }),
+--     Statement({ fg = palette.fg }),
+--     Special({ fg = palette.fg }),
+--     Type({ fg = palette.fg }),
+--     Identifier({ fg = palette.fg }),
+--     PreProc({ fg = palette.fg }),
+--     Constant({ fg = palette.fg }),
+--     Comment({ fg = palette.fg }),
+--     Normal({ fg = palette.fg, bg = palette.bg }),
+--     -- Add more highlight groups as needed
 --   }
 -- end)
 --
@@ -52,39 +34,3 @@
 --
 -- -- Optionally set term colors
 -- require("zenbones.term").apply_colors(palette)
-local colors_name = "matrixscheme"
-vim.g.colors_name = colors_name -- Required when defining a colorscheme
-
-local lush = require("lush")
-local hsluv = lush.hsluv -- Human-friendly hsl
-local util = require("zenbones.util")
-
-local palette = util.palette_extend({
-  bg = hsluv("#000000"), -- Black background
-  fg = hsluv("#00FF00"), -- Green foreground
-}, "dark")
-
--- Generate the lush specs using the generator util
-local generator = require("zenbones.specs")
-local base_specs = generator.generate(palette, "dark", generator.get_global_config(colors_name, "dark"))
-
--- Optionally extend specs using Lush
-local specs = lush.extends({ base_specs }).with(function()
-  return {
-    Statement({ fg = palette.fg }),
-    Special({ fg = palette.fg }),
-    Type({ fg = palette.fg }),
-    Identifier({ fg = palette.fg }),
-    PreProc({ fg = palette.fg }),
-    Constant({ fg = palette.fg }),
-    Comment({ fg = palette.fg }),
-    Normal({ fg = palette.fg, bg = palette.bg }),
-    -- Add more highlight groups as needed
-  }
-end)
-
--- Pass the specs to lush to apply
-lush(specs)
-
--- Optionally set term colors
-require("zenbones.term").apply_colors(palette)

@@ -88,3 +88,7 @@ end, {})
 
 -- Keymap for easier access
 vim.keymap.set("n", "<leader>as", ":AugmentSigninFix<CR>", { desc = "Augment Signin with URL copy" })
+
+vim.api.nvim_create_user_command("OpenCodeTerminal", function()
+  vim.cmd("vsplit | terminal opencode .")
+end, {})

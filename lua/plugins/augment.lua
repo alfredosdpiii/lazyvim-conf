@@ -9,6 +9,7 @@ return {
       -- Configure workspace folders to get the most out of Augment
       vim.g.augment_workspace_folders = {
         "~/Projects/puppetmaster/",
+        "~/Projects/orchestrator/",
         "~/Projects/builder/",
         "~/.config/nvim/",
         -- Add more paths as needed

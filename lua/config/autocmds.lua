@@ -96,7 +96,7 @@ end, {})
 -- Helper to build the RA.Aid command string
 local function build_raid_cmd(flags, prompt)
   return string.format(
-    [[split | terminal ra-aid %s --provider openrouter --model google/gemini-2.5-pro-preview --use-aider -m "%s"]],
+    [[split | terminal ra-aid %s --provider openrouter --model google/gemini-2.5-pro-preview -m "%s"]],
     flags,
     prompt
   )

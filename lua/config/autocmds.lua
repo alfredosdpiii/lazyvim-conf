@@ -93,80 +93,144 @@ vim.api.nvim_create_user_command("OpenCodeTerminal", function()
   vim.cmd("vsplit | terminal opencode .")
 end, {})
 
--- Helper to build the RA.Aid command string
+-- RA.Aid Neovim Integration (updated with cost‑efficient model pairings)
+-- Recommended default primary: openai/o4-mini-high (fast + cheap)
+-- Recommended default expert : openai/gpt-4.1 (high patch accuracy)
+--
+-- Change PRIMARY_MODEL and EXPERT_MODEL below to switch stack easily.
+local PROVIDER = "openrouter"
+local PRIMARY_MODEL = "openai/o4-mini-high"
+local EXPERT_MODEL = "openai/gpt-4.1"
+
+---------------------------------------------------------------------
+-- Core helper: build a generic RA.Aid command string
+---------------------------------------------------------------------
 local function build_raid_cmd(flags, prompt)
   return string.format(
-    [[split | terminal ra-aid %s --expert-provider openrouter --expert-model google/gemini-2.5-pro-preview -m "%s"]],
+    [[split | terminal ra-aid %s --provider %s --model %s --expert-provider %s --expert-model %s -m "%s"]],
     flags,
+    PROVIDER,
+    PRIMARY_MODEL,
+    PROVIDER,
+    EXPERT_MODEL,
     prompt
   )
 end
 
--- 1. Cowboy Mode (default)
+---------------------------------------------------------------------
+-- 1. Cowboy Mode (default – quick, no approvals)
+---------------------------------------------------------------------
 vim.api.nvim_create_user_command("RAIDCowboy", function()
-  vim.cmd(build_raid_cmd("--cowboy-mode", "Describe your task here"))
-end, {
-  desc = "Open RA.Aid in cowboy mode (no approvals) in a split terminal",
-})
+  vim.cmd(build_raid_cmd("--use aider --cowboy-mode", "Describe your task here"))
+end, { desc = "Open RA.Aid in cowboy mode in a horizontal split terminal" })
 
--- 2. Research-Only Mode
+---------------------------------------------------------------------
+-- 2. Research‑Only Mode (analysis, no code edits)
+---------------------------------------------------------------------
 vim.api.nvim_create_user_command("RAIDCodebase", function()
-  vim.cmd(build_raid_cmd("--research-only --cowboy-mode", "Research: analyze the current codebase"))
-end, {
-  desc = "Open RA.Aid in research-only mode (analysis only) in a split terminal",
-})
+  vim.cmd(build_raid_cmd("--use-aider --research-only --cowboy-mode", "Research: analyze the current codebase"))
+end, { desc = "Open RA.Aid in research‑only mode" })
 
--- 3. Coder Mode (Aider Integration)
+---------------------------------------------------------------------
+-- 3. Coder Mode (Aider Integration for code refactors)
+---------------------------------------------------------------------
 vim.api.nvim_create_user_command("RAIDCoder", function()
   vim.cmd(build_raid_cmd("--use-aider --cowboy-mode", "Refactor this file"))
-end, {
-  desc = "Run RA.Aid with Aider for code edits on the current file",
-})
+end, { desc = "Run RA.Aid with Aider for code edits on the current file" })
 
--- 4. Interactive Chat Mode
+---------------------------------------------------------------------
+-- 4. Interactive Chat Mode (manual conversation)
+---------------------------------------------------------------------
 vim.api.nvim_create_user_command("RAIDChat", function()
   vim.cmd(
     string.format(
-      "vsplit | terminal ra-aid --chat --provider openrouter --model google/gemini-2.5-pro-preview --cowboy-mode"
+      [[vsplit | terminal ra-aid --chat --use-aider --provider %s --model %s --expert-provider %s --expert-model %s --cowboy-mode]],
+      PROVIDER,
+      PRIMARY_MODEL,
+      PROVIDER,
+      EXPERT_MODEL
     )
   )
-end, {
-  desc = "Open RA.Aid in interactive chat mode in a vertical split terminal",
-})
+end, { desc = "Open RA.Aid in interactive chat mode in a vertical split" })
 
--- Helper builder for RA.Aid + Aider
-local function raid_aider_cmd(extra_flags, prompt)
+---------------------------------------------------------------------
+-- 5. Plain Chat with Current Buffer Content (NEW)
+--    Sends the *entire current buffer* as the initial message so you
+--    can discuss code or text without Aider’s structured diff logic.
+---------------------------------------------------------------------
+vim.api.nvim_create_user_command("RAIDPlainChat", function()
+  local bufpath = vim.fn.expand("%:p")
+  if bufpath == "" then
+    vim.notify("Current buffer has no file on disk", vim.log.levels.ERROR)
+    return
+  end
+  vim.cmd(
+    string.format(
+      [[split | terminal ra-aid --chat --provider %s --model %s --expert-provider %s --expert-model %s --msg-file "%s" --cowboy-mode]],
+      PROVIDER,
+      PRIMARY_MODEL,
+      PROVIDER,
+      EXPERT_MODEL,
+      bufpath
+    )
+  )
+end, { desc = "Chat with RA.Aid using entire current buffer as prompt" })
+
+---------------------------------------------------------------------
+-- 6. Alternative Ready‑made Stacks
+---------------------------------------------------------------------
+local function build_pair_cmd(primary, expert, flags, prompt)
   return string.format(
-    'split | terminal ra-aid --use-aider %s --provider openrouter --model google/gemini-2.5-pro-preview -m "%s"',
-    extra_flags,
+    [[split | terminal ra-aid %s --provider %s --model %s --expert-provider %s --expert-model %s -m "%s"]],
+    flags,
+    PROVIDER,
+    primary,
+    PROVIDER,
+    expert,
     prompt
   )
 end
 
--- 1.1. Open Aider Session (reattach if exists)
+-- 6.1 Ultra‑Budget: DeepSeek V3 + o4-mini-high
+vim.api.nvim_create_user_command("RAIDBudget", function()
+  vim.cmd(
+    build_pair_cmd("deepseek/deepseek-chat-v3-0324", "openai/o4-mini-high", "--cowboy-mode", "Describe your task here")
+  )
+end, { desc = "RA.Aid with DeepSeek V3 primary and o4-mini-high expert" })
+
+-- 6.2 Latency‑Optimised: GPT-4.1 nano + o3-mini-high
+vim.api.nvim_create_user_command("RAIDLatency", function()
+  vim.cmd(build_pair_cmd("openai/gpt-4.1-nano", "openai/o3-mini-high", "--cowboy-mode", "Describe your task here"))
+end, { desc = "RA.Aid with GPT‑4.1 nano primary and o3-mini-high expert" })
+
+---------------------------------------------------------------------
+-- 7. Aider Convenience Helpers (reuse current PRIMARY/EXPERT models)
+---------------------------------------------------------------------
+local function raid_aider_cmd(extra_flags, prompt)
+  return string.format(
+    [[split | terminal ra-aid --use-aider %s --provider %s --model %s --expert-provider %s --expert-model %s -m "%s"]],
+    extra_flags,
+    PROVIDER,
+    PRIMARY_MODEL,
+    PROVIDER,
+    EXPERT_MODEL,
+    prompt
+  )
+end
+
 vim.api.nvim_create_user_command("RAIDAiderOpen", function()
   vim.cmd(raid_aider_cmd("", "Aider: Start or reattach session"))
-end, {
-  desc = "Open or reattach to an Aider-powered RA.Aid session in a split terminal",
-})
+end, { desc = "Open or reattach to an Aider session" })
 
--- 1.2. Add All Modified Git Files to Session
 vim.api.nvim_create_user_command("RAIDAiderAddModified", function()
-  vim.cmd(raid_aider_cmd('--aider-args="--add-modified"', "Aider: Add all git-modified files"))
-end, {
-  desc = "Add all git-modified files to the current Aider session",
-})
+  vim.cmd(raid_aider_cmd('--aider-args="--add-modified"', "Aider: Add all git‑modified files"))
+end, { desc = "Add all git‑modified files to Aider" })
 
--- 1.3. Send Current Buffer to Aider
 vim.api.nvim_create_user_command("RAIDAiderSendBuffer", function()
   vim.cmd(raid_aider_cmd('--aider-args="--send-buffer"', "Aider: Send current buffer"))
-end, {
-  desc = "Send the entire current buffer to Aider for context or edits",
-})
+end, { desc = "Send entire current buffer to Aider" })
 
--- 1.4. Send Selected Lines to Aider
 vim.api.nvim_create_user_command("RAIDAiderSendSelection", function(opts)
-  -- opts.args captures a range like `'<,'>` for visual selection
   vim.cmd(
     string.format(
       "range %s | %s | normal! gv",
@@ -174,24 +238,15 @@ vim.api.nvim_create_user_command("RAIDAiderSendSelection", function(opts)
       raid_aider_cmd('--aider-args="--send-selection"', "Aider: Send visual selection")
     )
   )
-end, {
-  desc = "Send the visually selected text to Aider",
-  range = true,
-})
+end, { desc = "Send visually selected text to Aider", range = true })
 
--- 1.5. Send Buffer Diagnostics to Aider
 vim.api.nvim_create_user_command("RAIDAiderDiagnostics", function()
   vim.cmd(raid_aider_cmd('--aider-args="--send-diagnostics"', "Aider: Send buffer diagnostics"))
-end, {
-  desc = "Send current buffer diagnostics (lint errors, warnings) to Aider",
-})
+end, { desc = "Send diagnostics to Aider" })
 
--- 1.6. Reset Aider Session
 vim.api.nvim_create_user_command("RAIDAiderReset", function()
   vim.cmd(raid_aider_cmd('--aider-args="--reset"', "Aider: Reset session"))
-end, {
-  desc = "Clear all files and chat history from the current Aider session",
-})
+end, { desc = "Reset current Aider session" })
 
 -- vim.cmd([[
 --   augroup RAIDAdvancedAider

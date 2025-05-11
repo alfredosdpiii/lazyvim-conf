@@ -116,19 +116,6 @@ end, {
   desc = "Open RA.Aid in research-only mode (analysis only) in a split terminal",
 })
 
-vim.api.nvim_create_user_command("RAIDResearch", function()
-  vim.cmd([[
-    split
-    terminal ra-aid \
-      --provider openrouter \
-      --model google/gemini-2.5-pro-preview \
-      --research-only \
-      --cowboy-mode
-  ]])
-end, {
-  desc = "Open RA.Aid in research-only mode (REPL) in a split terminal",
-})
-
 -- 3. Coder Mode (Aider Integration)
 vim.api.nvim_create_user_command("RAIDCoder", function()
   vim.cmd(build_raid_cmd("--use-aider --cowboy-mode", "Refactor this file"))

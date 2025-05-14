@@ -144,7 +144,7 @@ end, { desc = "Run RA.Aid with Aider for code edits on the current file" })
 vim.api.nvim_create_user_command("RAIDChat", function()
   vim.cmd(
     string.format(
-      [[vsplit | terminal ra-aid --chat --use-aider --provider %s --model %s --expert-provider %s --expert-model %s --cowboy-mode]],
+      [[vsplit | terminal ra-aid --chat --provider %s --model %s --expert-provider %s --expert-model %s --cowboy-mode]],
       PROVIDER,
       PRIMARY_MODEL,
       PROVIDER,

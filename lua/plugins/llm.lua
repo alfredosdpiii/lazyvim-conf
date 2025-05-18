@@ -5,7 +5,7 @@ return {
     priority = 1000,
     opts = {
       backend = "ollama",
-      model = "qwen2.5-coder:0.5b",
+      model = "qwen2.5-coder:3b",
       url = "http://localhost:11434/api/generate",
       accept_keymap = "<C-a>",
       lsp = {

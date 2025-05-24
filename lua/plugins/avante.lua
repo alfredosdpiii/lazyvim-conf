@@ -5,16 +5,25 @@ return {
     lazy = false,
     version = false, -- Never set this value to "*"! Never!
     opts = {
-      provider = "openrouter",
-      auto_suggestions_provider = "openrouter",
-      cursor_applying_provider = "openrouter", -- Use Groq for applying in cursor planning mode
+      provider = "gemini",
+      auto_suggestions_provider = "gemini",
+      cursor_applying_provider = "gemini",
+
+      -- Gemini-specific configuration
+      gemini = {
+        endpoint = "https://generativelanguage.googleapis.com/v1beta/models",
+        model = "gemini-2.5-flash-preview-05-20",
+        timeout = 30000,
+        temperature = 0,
+        max_tokens = 8192,
+        api_key_name = "GEMINI_API_KEY",
+      },
 
       -- Move ollama out of vendors to be a top-level config as recommended
       ollama = {
         endpoint = "http://127.0.0.1:11434", -- Note: no /v1 at the end
         model = "deepcoder",
       },
-
       -- Add RAG service configuration
       rag_service = {
         enabled = true, -- Set to true to enable RAG service

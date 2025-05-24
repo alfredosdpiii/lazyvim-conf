@@ -30,8 +30,9 @@ return {
   {
     "olimorris/codecompanion.nvim",
     config = function()
-      local default_model = "x-ai/grok-3-mini-beta"
+      local default_model = "google/gemini-2.5-flash-preview-05-20"
       local available_models = {
+        "google/gemini-2.5-flash-preview-05-20",
         "google/gemini-2.5-flash-preview",
         "google/gemini-2.5-flash-preview-thinking",
         "google/gemini-2.5-pro",
@@ -49,6 +50,23 @@ return {
           if choice then
             current_model = choice
             vim.notify("Selected model: " .. current_model)
+            -- Update the gemini adapter with the new model
+            require("codecompanion").setup({
+              adapters = {
+                gemini = function()
+                  return require("codecompanion.adapters").extend("gemini", {
+                    env = {
+                      api_key = "GEMINI_API_KEY",
+                    },
+                    schema = {
+                      model = {
+                        default = current_model,
+                      },
+                    },
+                  })
+                end,
+              },
+            })
           end
         end)
       end
@@ -56,13 +74,25 @@ return {
       require("codecompanion").setup({
         strategies = {
           chat = {
-            adapter = "openrouter",
+            adapter = "gemini",
           },
           inline = {
-            adapter = "openrouter",
+            adapter = "gemini",
           },
         },
         adapters = {
+          gemini = function()
+            return require("codecompanion.adapters").extend("gemini", {
+              env = {
+                api_key = "GEMINI_API_KEY",
+              },
+              schema = {
+                model = {
+                  default = "gemini-2.5-flash-preview-05-20",
+                },
+              },
+            })
+          end,
           openrouter = function()
             return require("codecompanion.adapters").extend("openai_compatible", {
               env = {

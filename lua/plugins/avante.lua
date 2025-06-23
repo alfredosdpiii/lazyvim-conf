@@ -5,16 +5,25 @@ return {
     lazy = false,
     version = false, -- Never set this value to "*"! Never!
     opts = {
-      provider = "openrouter",
-      auto_suggestions_provider = "openrouter",
-      cursor_applying_provider = "openrouter", -- Use Groq for applying in cursor planning mode
+      provider = "gemini",
+      auto_suggestions_provider = "gemini",
+      cursor_applying_provider = "gemini",
+
+      -- Gemini-specific configuration
+      gemini = {
+        endpoint = "https://generativelanguage.googleapis.com/v1beta/models",
+        model = "gemini-2.5-flash-preview-05-20",
+        timeout = 30000,
+        temperature = 0,
+        max_tokens = 8192,
+        api_key_name = "GEMINI_API_KEY",
+      },
 
       -- Move ollama out of vendors to be a top-level config as recommended
       ollama = {
         endpoint = "http://127.0.0.1:11434", -- Note: no /v1 at the end
         model = "deepcoder",
       },
-
       -- Add RAG service configuration
       rag_service = {
         enabled = true, -- Set to true to enable RAG service
@@ -52,7 +61,21 @@ return {
           __inherited_from = "openai",
           api_key_name = "OPENROUTER_API_KEY",
           endpoint = "https://openrouter.ai/api/v1",
-          model = "openrouter/quasar-alpha",
+          model = "openai/o4-mini",
+        },
+        architect = {
+          __inherited_from = "openai",
+          api_key_name = "OPENROUTER_API_KEY",
+          endpoint = "https://openrouter.ai/api/v1",
+          model = "x-ai/grok-3-mini-beta",
+          -- temperature = 0.3,
+        },
+        coder = {
+          __inherited_from = "openai",
+          api_key_name = "OPENROUTER_API_KEY",
+          endpoint = "https://openrouter.ai/api/v1",
+          model = "openai/gpt-4.1",
+          -- temperature = 0.1,
         },
         groq = {
           __inherited_from = "openai",
@@ -65,90 +88,42 @@ return {
           __inherited_from = "openai",
           api_key_name = "PERPLEXITY_API_KEY",
           endpoint = "https://api.perplexity.ai",
-          model = "sonar-reasoning",
+          model = "sonar-deep-research",
         },
       },
 
       dual_boost = {
         enabled = false,
-        first_provider = "perplexity",
-        second_provider = "ollama",
+        first_provider = "architect",
+        second_provider = "perplexity",
         prompt = [[
-        You are an expert developer combining Perplexity's search with Ollama's reasoning. Your task is to create production-ready solutions.
-
-SEARCH INTEGRATION (Perplexity):
-Use search results for authoritative information:
-• Current documentation & APIs
-• Version compatibility
-• Community solutions
-• Known issues & fixes
-• Security advisories
-• Performance patterns
-
-CODE ANALYSIS (Ollama):
-Apply reasoning for implementation:
-• Code structure & patterns
-• Error handling strategy
-• Security measures
-• Performance optimization
-• Edge case handling
-• Testing approach
-
-SOLUTION PROCESS:
-<think>
-1. Analyze Requirements:
-   - Understand the problem scope
-   - Identify key constraints
-   - List technical requirements
-
-2. Evaluate Options:
-   - Compare possible approaches
-   - Consider trade-offs
-   - Choose optimal solution
-
-3. Implementation Plan:
-   - Define steps
-   - Note potential risks
-   - Plan validation strategy
-</think>
-
-RESPONSE FORMAT:
-
-1. Quick Implementation:
-   • Working solution
-   • Key requirements
-   • Basic usage
-   [Include source/version]
-
-2. Full Solution:
-   • Complete code
-   • Error handling
-   • Tests
-   • Security measures
-   • Performance notes
-   [Include references]
-
-3. Context:
-   • Pitfalls to avoid
-   • Alternative options
-   • Maintenance notes
-   • Scaling considerations
-
-RULES:
-• Trust search for facts
-• Use reasoning for implementation
-• Include working code
-• Add relevant citations
-• Explain key decisions
-• Focus on maintainability
-• Consider security first
-
-Reference Output 1 (Perplexity Search): [{{provider1_output}}]
-Reference Output 2 (Ollama Reasoning): [{{provider2_output}}]
-
-Provide direct, implementation-focused solutions.
+        "test"
+        
         ]],
       },
+
+      -- MCP Hub integration
+      system_prompt = function()
+        local hub = require("mcphub").get_hub_instance()
+        return hub:get_active_servers_prompt()
+      end,
+      custom_tools = function()
+        return {
+          require("mcphub.extensions.avante").mcp_tool(),
+        }
+      end,
+      -- disabled_tools = {
+      --   "list_files",
+      --   "search_files",
+      --   "read_file",
+      --   "create_file",
+      --   "rename_file",
+      --   "delete_file",
+      --   "create_dir",
+      --   "rename_dir",
+      --   "delete_dir",
+      --   "bash",
+      -- },
     },
     build = "make",
     dependencies = {

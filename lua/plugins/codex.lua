@@ -1,0 +1,21 @@
+return {
+  "johnseth97/codex.nvim",
+  branch = "patch-2",
+  lazy = false,
+  keys = {
+    {
+      "<leader>co",
+      function()
+        require("codex").toggle()
+      end,
+      desc = "Toggle Codex popup",
+    },
+  },
+  opts = {
+    keymaps = {}, -- disable internal mapping
+    border = "rounded", -- or 'double'
+    width = 0.8,
+    height = 0.8,
+    autoinstall = true,
+  },
+}

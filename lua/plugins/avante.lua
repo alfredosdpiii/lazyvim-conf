@@ -10,20 +10,20 @@ return {
       cursor_applying_provider = "gemini",
 
       -- Gemini-specific configuration
-      gemini = {
-        endpoint = "https://generativelanguage.googleapis.com/v1beta/models",
-        model = "gemini-2.5-flash-preview-05-20",
-        timeout = 30000,
-        temperature = 0,
-        max_tokens = 8192,
-        api_key_name = "GEMINI_API_KEY",
-      },
-
-      -- Move ollama out of vendors to be a top-level config as recommended
-      ollama = {
-        endpoint = "http://127.0.0.1:11434", -- Note: no /v1 at the end
-        model = "deepcoder",
-      },
+      -- gemini = {
+      --   endpoint = "https://generativelanguage.googleapis.com/v1beta/models",
+      --   model = "gemini-2.5-flash-preview-05-20",
+      --   timeout = 30000,
+      --   temperature = 0,
+      --   max_tokens = 8192,
+      --   api_key_name = "GEMINI_API_KEY",
+      -- },
+      --
+      -- -- Move ollama out of vendors to be a top-level config as recommended
+      -- ollama = {
+      --   endpoint = "http://127.0.0.1:11434", -- Note: no /v1 at the end
+      --   model = "deepcoder",
+      -- },
       -- Add RAG service configuration
       rag_service = {
         enabled = true, -- Set to true to enable RAG service
@@ -50,47 +50,47 @@ return {
         proxy = nil, -- proxy support, e.g., http://127.0.0.1:7890
       },
 
-      vendors = {
-        deepseek = {
-          __inherited_from = "openai", -- Use openai-like logic
-          api_key_name = "DEEPSEEK_API_KEY",
-          endpoint = "https://api.deepseek.com",
-          model = "deepseek-reasoner",
-        },
-        openrouter = {
-          __inherited_from = "openai",
-          api_key_name = "OPENROUTER_API_KEY",
-          endpoint = "https://openrouter.ai/api/v1",
-          model = "openai/o4-mini",
-        },
-        architect = {
-          __inherited_from = "openai",
-          api_key_name = "OPENROUTER_API_KEY",
-          endpoint = "https://openrouter.ai/api/v1",
-          model = "x-ai/grok-3-mini-beta",
-          -- temperature = 0.3,
-        },
-        coder = {
-          __inherited_from = "openai",
-          api_key_name = "OPENROUTER_API_KEY",
-          endpoint = "https://openrouter.ai/api/v1",
-          model = "openai/gpt-4.1",
-          -- temperature = 0.1,
-        },
-        groq = {
-          __inherited_from = "openai",
-          api_key_name = "GROQ_API_KEY",
-          endpoint = "https://api.groq.com/openai/v1",
-          model = "llama-3.3-70b-versatile", -- Updated to recommended model for cursor planning
-          max_completion_tokens = 32768, -- Increased as recommended for cursor planning mode
-        },
-        perplexity = {
-          __inherited_from = "openai",
-          api_key_name = "PERPLEXITY_API_KEY",
-          endpoint = "https://api.perplexity.ai",
-          model = "sonar-deep-research",
-        },
-      },
+      -- vendors = {
+      --   deepseek = {
+      --     __inherited_from = "openai", -- Use openai-like logic
+      --     api_key_name = "DEEPSEEK_API_KEY",
+      --     endpoint = "https://api.deepseek.com",
+      --     model = "deepseek-reasoner",
+      --   },
+      --   openrouter = {
+      --     __inherited_from = "openai",
+      --     api_key_name = "OPENROUTER_API_KEY",
+      --     endpoint = "https://openrouter.ai/api/v1",
+      --     model = "openai/o4-mini",
+      --   },
+      --   architect = {
+      --     __inherited_from = "openai",
+      --     api_key_name = "OPENROUTER_API_KEY",
+      --     endpoint = "https://openrouter.ai/api/v1",
+      --     model = "x-ai/grok-3-mini-beta",
+      --     -- temperature = 0.3,
+      --   },
+      --   coder = {
+      --     __inherited_from = "openai",
+      --     api_key_name = "OPENROUTER_API_KEY",
+      --     endpoint = "https://openrouter.ai/api/v1",
+      --     model = "openai/gpt-4.1",
+      --     -- temperature = 0.1,
+      --   },
+      --   groq = {
+      --     __inherited_from = "openai",
+      --     api_key_name = "GROQ_API_KEY",
+      --     endpoint = "https://api.groq.com/openai/v1",
+      --     model = "llama-3.3-70b-versatile", -- Updated to recommended model for cursor planning
+      --     max_completion_tokens = 32768, -- Increased as recommended for cursor planning mode
+      --   },
+      --   perplexity = {
+      --     __inherited_from = "openai",
+      --     api_key_name = "PERPLEXITY_API_KEY",
+      --     endpoint = "https://api.perplexity.ai",
+      --     model = "sonar-deep-research",
+      --   },
+      -- },
 
       dual_boost = {
         enabled = false,

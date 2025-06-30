@@ -9,22 +9,17 @@ return {
       auto_suggestions_provider = "gemini",
       cursor_applying_provider = "gemini",
 
-      -- Gemini-specific configuration
-      -- gemini = {
-      --   endpoint = "https://generativelanguage.googleapis.com/v1beta/models",
-      --   model = "gemini-2.5-flash-preview-05-20",
-      --   timeout = 30000,
-      --   temperature = 0,
-      --   max_tokens = 8192,
-      --   api_key_name = "GEMINI_API_KEY",
-      -- },
-      --
-      -- -- Move ollama out of vendors to be a top-level config as recommended
-      -- ollama = {
-      --   endpoint = "http://127.0.0.1:11434", -- Note: no /v1 at the end
-      --   model = "deepcoder",
-      -- },
-      -- Add RAG service configuration
+      -- Gemini provider configuration
+      providers = {
+        gemini = {
+          model = "gemini-2.5-flash",
+          timeout = 30000, -- 30 seconds
+          temperature = 0,
+          max_tokens = 8192,
+          -- api_key_name = "cmd:security find-generic-password -s GEMINI_KEY -w", -- Optional: use macOS keychain
+        },
+      },
+
       rag_service = {
         enabled = true, -- Set to true to enable RAG service
         host_mount = os.getenv("HOME"), -- Host mount path for the rag service
@@ -43,54 +38,15 @@ return {
         support_paste_from_clipboard = false,
         minimize_diff = true,
         enable_token_counting = true,
+        auto_focus_sidebar = true, -- New option
+        auto_suggestions = false, -- Experimental feature
+        auto_approve_tool_permissions = false, -- New security option
       },
 
       web_search_engine = {
         provider = "tavily", -- tavily, serpapi, searchapi, google, kagi, brave, or searxng
         proxy = nil, -- proxy support, e.g., http://127.0.0.1:7890
       },
-
-      -- vendors = {
-      --   deepseek = {
-      --     __inherited_from = "openai", -- Use openai-like logic
-      --     api_key_name = "DEEPSEEK_API_KEY",
-      --     endpoint = "https://api.deepseek.com",
-      --     model = "deepseek-reasoner",
-      --   },
-      --   openrouter = {
-      --     __inherited_from = "openai",
-      --     api_key_name = "OPENROUTER_API_KEY",
-      --     endpoint = "https://openrouter.ai/api/v1",
-      --     model = "openai/o4-mini",
-      --   },
-      --   architect = {
-      --     __inherited_from = "openai",
-      --     api_key_name = "OPENROUTER_API_KEY",
-      --     endpoint = "https://openrouter.ai/api/v1",
-      --     model = "x-ai/grok-3-mini-beta",
-      --     -- temperature = 0.3,
-      --   },
-      --   coder = {
-      --     __inherited_from = "openai",
-      --     api_key_name = "OPENROUTER_API_KEY",
-      --     endpoint = "https://openrouter.ai/api/v1",
-      --     model = "openai/gpt-4.1",
-      --     -- temperature = 0.1,
-      --   },
-      --   groq = {
-      --     __inherited_from = "openai",
-      --     api_key_name = "GROQ_API_KEY",
-      --     endpoint = "https://api.groq.com/openai/v1",
-      --     model = "llama-3.3-70b-versatile", -- Updated to recommended model for cursor planning
-      --     max_completion_tokens = 32768, -- Increased as recommended for cursor planning mode
-      --   },
-      --   perplexity = {
-      --     __inherited_from = "openai",
-      --     api_key_name = "PERPLEXITY_API_KEY",
-      --     endpoint = "https://api.perplexity.ai",
-      --     model = "sonar-deep-research",
-      --   },
-      -- },
 
       dual_boost = {
         enabled = false,
@@ -125,7 +81,14 @@ return {
       --   "bash",
       -- },
     },
-    build = "make",
+    -- Cross-platform build configuration
+    build = function()
+      if vim.fn.has("win32") == 1 then
+        return "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false"
+      else
+        return "make"
+      end
+    end,
     dependencies = {
       "stevearc/dressing.nvim",
       "nvim-lua/plenary.nvim",

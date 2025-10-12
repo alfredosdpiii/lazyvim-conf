@@ -70,28 +70,6 @@ return {
     },
   },
   {
-    "olimorris/codecompanion.nvim",
-    lazy = false,
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-treesitter/nvim-treesitter",
-    },
-    config = function()
-      require("codecompanion").setup({
-        adapters = {
-          chat = require("codecompanion.adapters").extend(
-            "ollama",
-            { schema = { model = { default = "deepseek-r1:8b" } } }
-          ),
-          inline = require("codecompanion.adapters").extend(
-            "ollama",
-            { schema = { model = { default = "deepseek-r1:8b" } } }
-          ),
-        },
-      })
-    end,
-  },
-  {
     "sindrets/diffview.nvim",
   },
 }
